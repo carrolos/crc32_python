@@ -179,32 +179,39 @@ def print_outcome(left_val: int, left_desc: str, right_val: int, right_desc: str
 
 def main():
     message = "hello, world!".encode("utf-8")
-
-    lsb_arr = crc32_tab_gen_lsb(False)
-    assert(len(lsb_arr) == 256)
-    bytewise_lsb = crc32_bytewise_lsb(message)
-    via_tab_lsb = crc32_via_tab_lsb(message, lsb_arr)
-
-#    print_outcome(bytewise_lsb, "bytewise", via_tab_lsb, "tab", True)
-
+    print("Generating both msb and lsb tables...")
     msb_arr = crc32_tab_gen_msb(False)
+    lsb_arr = crc32_tab_gen_lsb(False)
+
+    print(f"Calculating crc32 for message=<{message}>.")
+    print("First up, msb versions:")
+    msb_bitwise = crc32_bitwise_msb(message)
     bytewise_msb = crc32_bytewise_msb(message)
     via_tab_msb = crc32_via_tab_msb(message, msb_arr)
-
-#    print_outcome(bytewise_msb, "bytewise", via_tab_msb, "tab", False)
-
-    lsb_bitwise = crc32_bitwise_lsb(message)
-#    print_outcome(bytewise_lsb, "bytewise", lsb_bitwise, "bitwise", True)
-    msb_bitwise = crc32_bitwise_msb(message)
-    print_outcome(bytewise_msb, "bytewise", msb_bitwise, "bitwise", False)
-
-    lsb_wordwise = crc32_wordwise_lsb(message)
-#    print_outcome(bytewise_lsb, "bytewise", lsb_wordwise, "wordwise", True)
-
     msb_wordwise = crc32_wordwise_msb(message)
+    print(f"\tbitwise={hex(msb_bitwise)}")
+    print(f"\tbytewise={hex(bytewise_msb)}")
+    print(f"\ttable-wise={hex(via_tab_msb)}")
+    print(f"\twordwise={hex(msb_wordwise)}")
+
+    print(f"Now lsb versions:")
+    lsb_bitwise = crc32_bitwise_lsb(message)
+    bytewise_lsb = crc32_bytewise_lsb(message)
+    via_tab_lsb = crc32_via_tab_lsb(message, lsb_arr)
+    lsb_wordwise = crc32_wordwise_lsb(message)
+    print(f"\tbitwise={hex(lsb_bitwise)}")
+    print(f"\tbytewise={hex(bytewise_lsb)}")
+    print(f"\ttable-wise={hex(via_tab_lsb)}")
+    print(f"\twordwise={hex(lsb_wordwise)}")
+
+#    print_outcome(bytewise_lsb, "bytewise", via_tab_lsb, "tab", True)
+#    print_outcome(bytewise_msb, "bytewise", via_tab_msb, "tab", False)
+#    print_outcome(bytewise_lsb, "bytewise", lsb_bitwise, "bitwise", True)
+#    print_outcome(bytewise_msb, "bytewise", msb_bitwise, "bitwise", False)
+#    print_outcome(bytewise_lsb, "bytewise", lsb_wordwise, "wordwise", True)
 #    print_outcome(bytewise_msb, "bytewise", msb_wordwise, "wordwise", False)
 
-    print("Running benchmarks. First up, msb versions")
+    print("Now running benchmarks with timeit module. First up, msb versions")
     print(f"\ttimeit results for bitwise: {timeit.timeit(lambda: crc32_bitwise_msb(message))}")
     print(f"\ttimeit results for bytewise: {timeit.timeit(lambda: crc32_bytewise_msb(message))}")
     print(f"\ttimeit results for table: {timeit.timeit(lambda: crc32_via_tab_msb(message, msb_arr))}")
